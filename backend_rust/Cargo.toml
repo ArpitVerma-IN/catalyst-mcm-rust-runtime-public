@@ -1,0 +1,20 @@
+[package]
+name = "mcm_runtime"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"] # Crucial: Compiles the crate into a C-compatible shared library (.so)
+
+[dependencies]
+# For asynchronous, thread-safe measurement callback queues
+tokio = { version = "1.38", features = ["full"] }
+# For fast concurrency primitives and parallel map processing
+dashmap = "6.0"
+# For runtime telemetry and profiling logs
+log = "0.4"
+env_logger = "0.11"
+
+[build-dependencies]
+# Automatically generates Rust structs from the Catalyst C++ header files
+bindgen = "0.72"

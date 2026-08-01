@@ -1,0 +1,4 @@
+pennylane>=0.36
+pennylane-catalyst>=0.6
+pytest>=8.0
+numpy>=1.24

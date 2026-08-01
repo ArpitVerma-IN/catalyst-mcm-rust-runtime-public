@@ -1,0 +1,49 @@
+# valgrind.supp — Suppression rules for the MCM Runtime memory safety tests.
+#
+# These rules suppress known false positives from third-party components
+# (Tokio thread pool, glibc dynamic linker) that are not under our control.
+
+# glibc's dlopen/dlclose leaves internal bookkeeping allocated intentionally.
+{
+   glibc_dlopen_reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:dlopen*
+}
+
+{
+   glibc_dlclose_reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:dlclose*
+}
+
+# glibc's nss (name service switch) caches are allocated once and never freed.
+{
+   glibc_nss_reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:*nss*
+}
+
+# Tokio's thread-local storage may report as "still reachable" on shutdown
+# because thread-locals are cleaned up by the OS, not by explicit free().
+{
+   tokio_thread_local_reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:*tokio*
+}
+
+# Rust's standard library uses thread-local storage for panic infrastructure.
+{
+   rust_std_thread_local
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:*std*thread*local*
+}
