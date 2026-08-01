@@ -13,28 +13,13 @@ High-performance, memory-safe, and asynchronous systems plugin designed to manag
 
 ## 🏛️ Architecture
 
-```mermaid
-graph TD
-    subgraph Python Layer [frontend_python/]
-        mcm_ffi[mcm_ffi.py<br>ctypes wrapper]
-        conftest[conftest.py<br>pytest fixtures]
-    end
+The runtime operates across three distinct boundary layers:
 
-    subgraph C API
-        capi[include/catalyst_bindings/capi.h]
-    end
-
-    subgraph Rust Backend [backend_rust/src/]
-        ffi[ffi.rs<br>extern "C"]
-        runtime[runtime.rs<br>McmCore / Tokio]
-        qubit[qubit.rs<br>DashMap Registry]
-    end
-
-    mcm_ffi -->|ctypes FFI| capi
-    capi -->|#include / bindgen| ffi
-    ffi --> runtime
-    runtime --> qubit
-```
+1. **Frontend (Python / C++)**: Acts as the simulation or execution host. It links against the compiled dynamic library (`libmcm_runtime.so`) and triggers quantum instructions.
+2. **C-API Bridge (`capi.h` & `ffi.rs`)**: A strict, zero-panic `extern "C"` interface that safely translates memory pointers and runtime commands between the host language and the Rust backend.
+3. **Rust Core Engine (`backend_rust`)**: 
+   - Utilizes an asynchronous **Tokio** runtime to dispatch measurement callbacks to background threads, ensuring the host execution thread never blocks.
+   - Utilizes a highly concurrent, lock-free **DashMap** registry to track active qubits and store collapsed measurement states, enabling sub-microsecond evaluation of dynamic classical feedforward logic.
 
 ## 🏗️ Repository Layout
 
