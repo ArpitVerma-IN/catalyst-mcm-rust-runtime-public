@@ -1,5 +1,6 @@
 # Rust / Cargo
 /backend_rust/target/
+/releases/
 **/*.rs.bk
 
 # Python
